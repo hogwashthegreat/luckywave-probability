@@ -1,7 +1,7 @@
 import argparse
 import numpy as np
 
-def run_sim(N=10000000, plot=False, bins=100):
+def run_sim(N=100000000, plot=True, bins=100):
     rng = np.random.default_rng()
 
     # Draw N priors x ~ Uniform(0,1)
@@ -37,11 +37,11 @@ def run_sim(N=10000000, plot=False, bins=100):
             pdf = 2.0 * xs  # Beta(2,1) density
 
             plt.figure(figsize=(7,5))
-            plt.hist(x_given_success, bins=bins, density=True, alpha=0.6,
-                     label="Simulated posterior of x | success")
-            plt.plot(xs, pdf, linewidth=2, label="Theoretical Beta(2,1) pdf = 2x")
+            plt.hist(x_given_success, bins=bins, density=False, weights=np.ones(x_given_success.size, dtype=float)/ x_given_success.size, alpha=0.6,
+                     label="Empirical probability per bin")
+            #plt.plot(xs, pdf, linewidth=2, label="Theoretical Beta(2,1) pdf = 2x")
             plt.xlabel("x")
-            plt.ylabel("Density")
+            plt.ylabel("Probability (per bin)")
             plt.title("Posterior of x given FIRST trial success")
             plt.legend()
             plt.tight_layout()
@@ -51,14 +51,12 @@ def run_sim(N=10000000, plot=False, bins=100):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("-n", "--num-experiments", type=int, default=10_000_000,
-                   help="number of experiments to simulate (default: 10,000,000)")
-    p.add_argument("--seed", type=int, default=0, help="RNG seed (default: 0)")
-    p.add_argument("--plot", action="store_true", help="show posterior histogram vs theory")
-    p.add_argument("--bins", type=int, default=100, help="histogram bins if --plot")
+    p.add_argument("-n", "--num-experiments", type=int, default=100_000_000,
+                   help="number of experiments to simulate (default: 100,000,000)")
+
     args = p.parse_args()
 
-    run_sim(N=args.num_experiments, plot=args.plot, bins=args.bins)
+    run_sim(N=args.num_experiments)
 
 if __name__ == "__main__":
     main()
